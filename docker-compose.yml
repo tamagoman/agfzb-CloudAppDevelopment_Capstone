@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+    coursera:
+        container_name: 'coursera'
+        build: .
+        environment:
+          TZ: "America/Guayaquil"
+          DJANGO_SUPERUSER_USERNAME: root
+          DJANGO_SUPERUSER_PASSWORD: root
+          DJANGO_SUPERUSER_EMAIL: 'root@email.com'
+        ports:
+            - "5858:8000"
+        expose:
+            # Opens port 3306 on the container
+            - '3306'
+        networks:
+            - ibm
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.2'
+                    memory: 300M
+networks:
+    ibm:
+        driver: bridge
