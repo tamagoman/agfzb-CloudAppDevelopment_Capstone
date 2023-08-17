@@ -36,8 +36,9 @@ def contact(request):
 #week 2 t5
 def login_request(request):
     context = {}
-    url = "https://41165407-fde5-4d7f-9595-a7ccd5c0c021-bluemix.cloudantnosqldb.appdomain.cloud/api/dealership"
+    url = "https://us-south.functions.appdomain.cloud/api/v1/web/91a114a4-4a67-40c8-aeeb-d05bf43a9d40/api/dealership"
     dealerships = get_dealers_from_cf(url)
+    # dealerships = None
     # Concat all dealer's short name
     context["dealership_list"]=dealerships
     if request.method == "POST":
@@ -62,8 +63,9 @@ def login_request(request):
 # Week 2 T5
 def logout_request(request):
     context = {}
-    url = "https://41165407-fde5-4d7f-9595-a7ccd5c0c021-bluemix.cloudantnosqldb.appdomain.cloud/api/dealership"
-    dealerships = get_dealers_from_cf(url)
+    # url = "https://41165407-fde5-4d7f-9595-a7ccd5c0c021-bluemix.cloudantnosqldb.appdomain.cloud/api/dealership"
+    # dealerships = get_dealers_from_cf(url)
+    dealerships = None
     # Concat all dealer's short name
     context["dealership_list"]=dealerships
     # Get the user object based on session id in request
@@ -85,9 +87,9 @@ def registration_request(request):
     elif request.method == 'POST':
         # Get user information from request.POST
         username = request.POST['username']
-        password = request.POST['pword']
-        first_name = request.POST['fname']
-        last_name = request.POST['lname']
+        password = request.POST['psw']
+        first_name = request.POST['firstname']
+        last_name = request.POST['lastname']
         user_exist = False
         try:
             # Check if user already exists
@@ -112,10 +114,11 @@ def registration_request(request):
 def get_dealerships(request):
     if request.method == "GET":
         context={}
-        url = "https://eu-gb.functions.appdomain.cloud/api/v1/web/05174de9-c4f2-4d8f-a22f-b17713e83492/dealership-package/get-dealership"
-        apikey="_xKRLnH-xVpGqx9u0VBB3dZUTVxhZ8JNVyxYY6ooCjB2"
+        url = "https://us-south.functions.appdomain.cloud/api/v1/web/91a114a4-4a67-40c8-aeeb-d05bf43a9d40/api/dealership"
+        # apikey="_xKRLnH-xVpGqx9u0VBB3dZUTVxhZ8JNVyxYY6ooCjB2"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
+        # dealerships = None
         # Concat all dealer's short name
         context["dealership_list"]=dealerships
         # Return a list of dealer short name
@@ -123,7 +126,6 @@ def get_dealerships(request):
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
-# def get_dealer_details(request, dealer_id):
 def get_dealer_details(request, dealer_id):
     context={}
     url = "https://eu-gb.functions.appdomain.cloud/api/v1/web/05174de9-c4f2-4d8f-a22f-b17713e83492/dealership-package/get-review"
@@ -134,12 +136,14 @@ def get_dealer_details(request, dealer_id):
     context["dealer_id"]=dealer_id
     context["reviews"]=dealer_details
     return render(request, 'djangoapp/dealer_details.html', context)
+
+
 # Create a `add_review` view to submit a review
 def add_review(request, dealer_id):
     context = {}
     # If it is a GET request, just render the add_review page
     if request.method == 'GET':
-        url = "https://eu-gb.functions.appdomain.cloud/api/v1/web/05174de9-c4f2-4d8f-a22f-b17713e83492/dealership-package/get-dealership"
+        url = "https://us-south.functions.appdomain.cloud/api/v1/web/91a114a4-4a67-40c8-aeeb-d05bf43a9d40/api/dealership"
         # Get dealers from the URL
         context = {
             "dealer_id": dealer_id,
@@ -172,7 +176,7 @@ def add_review(request, dealer_id):
                 review["car_make"]=None
                 review["car_model"]=None
                 review["car_year"]=None
-            json_result = post_request("https://eu-gb.functions.appdomain.cloud/api/v1/web/05174de9-c4f2-4d8f-a22f-b17713e83492/dealership-package/post-review", review, dealerId=dealer_id)
+            json_result = post_request("https://us-south.functions.appdomain.cloud/api/v1/web/91a114a4-4a67-40c8-aeeb-d05bf43a9d40/api/review", review, dealerId=dealer_id)
             print(json_result)
             if "error" in json_result:
                 context["message"] = "ERROR: Review was not submitted."
