@@ -12,6 +12,10 @@ RUN python -m ensurepip --upgrade
 
 RUN pip install --upgrade pip
 
+RUN apt update
+
+apt install sqlite3
+
 COPY ./requirements.txt .
 
 RUN pip install -r requirements.txt
