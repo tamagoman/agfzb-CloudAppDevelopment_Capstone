@@ -1,5 +1,8 @@
 import requests
 import json
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson.natural_language_understanding_v1 import Features, SyntaxOptions, SyntaxOptionsTokens, SentimentOptions
 
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
@@ -77,8 +80,8 @@ def get_dealer_reviews_from_cf(url, dealer_id):
     # Call get_request with a URL parameter
     json_result = get_request(url, dealerId=dealer_id)
     
-    if "entries" in json_result:
-        reviews = json_result["entries"]
+    if "data" in json_result:
+        reviews = json_result["data"]
         # For each review object
         for review in reviews:
             review_obj = DealerReview(
@@ -102,14 +105,25 @@ def get_dealer_reviews_from_cf(url, dealer_id):
 # - Call get_request() with specified arguments
 # - Get the returned sentiment label such as Positive or Negative
 def analyze_review_sentiments(dealerreview, **kwargs):
-    API_KEY="qHY59TRRsW6rPG4a-SP2pia-shPdmi6TFhdKAY6ktUyY"
-    NLU_URL='https://apikey-v2-yz8ut2q5yrvryc6zbtf7reuqm3ipkj2ul3tuy5yb23l:38032cd4ca78af7bc552eb9f07a9c0f9@41165407-fde5-4d7f-9595-a7ccd5c0c021-bluemix.cloudantnosqldb.appdomain.cloud'
-    params = json.dumps({"text": dealerreview, "features": {"sentiment": {}}})
-    response = requests.post(NLU_URL,data=params,headers={'Content-Type':'application/json'},auth=HTTPBasicAuth("apikey", API_KEY))
+    API_KEY="Gl8E0lXWSKT368Ju_GDy0ZJz5rMV0A2phVCCPmPeVLzY"
+    NLU_URL='https://api.au-syd.natural-language-understanding.watson.cloud.ibm.com/instances/5a4849af-7247-474a-92fd-e406c3523a76'
     
-    #print(response.json())
+    authenticator = IAMAuthenticator(API_KEY)
+    natural_language_understanding = NaturalLanguageUnderstandingV1(
+        version='2022-04-07',
+        authenticator=authenticator
+    )
+    natural_language_understanding.set_service_url(NLU_URL)
+    response = natural_language_understanding.analyze(
+        text=dealerreview,
+        features=Features(sentiment=SentimentOptions()),
+        language="en"
+    ).get_result()
+
+    # print(json.dumps(response, indent=2))
     try:
-        sentiment=response.json()['sentiment']['document']['label']
+        sentiment=response['sentiment']['document']['label']
+        
         return sentiment
     except:
         return "neutral"
