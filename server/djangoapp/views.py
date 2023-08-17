@@ -154,11 +154,14 @@ def add_review(request, dealer_id):
         return render(request, 'djangoapp/add_review.html', context)
     elif request.method == 'POST':
         if (request.user.is_authenticated):
+            requestData = dict()
+            
             review = dict()
-            review["id"]=0#placeholder
+            review["id"]=dealer_id#placeholder
             review["name"]=request.POST["name"]
             review["dealership"]=dealer_id
             review["review"]=request.POST["content"]
+            review["time"] = datetime.utcnow().isoformat()
             if ("purchasecheck" in request.POST):
                 review["purchase"]=True
             else:
@@ -176,7 +179,9 @@ def add_review(request, dealer_id):
                 review["car_make"]=None
                 review["car_model"]=None
                 review["car_year"]=None
-            json_result = post_request("https://us-south.functions.appdomain.cloud/api/v1/web/91a114a4-4a67-40c8-aeeb-d05bf43a9d40/api/review", review, dealerId=dealer_id)
+
+            requestData["review"] = review
+            json_result = post_request("https://us-south.functions.appdomain.cloud/api/v1/web/91a114a4-4a67-40c8-aeeb-d05bf43a9d40/api/review", requestData, dealerId=dealer_id)
             print(json_result)
             if "error" in json_result:
                 context["message"] = "ERROR: Review was not submitted."
